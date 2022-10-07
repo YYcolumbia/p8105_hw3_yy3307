@@ -1,0 +1,14 @@
+---
+title: "p8105_hw3_yy3307"
+output: github_document
+date: "2022-10-07"
+author: "Yang Yi"
+UNI: "yy3307"
+---
+
+```{r setup, message = FALSE}
+library(tidyverse)
+library(readxl)
+```
+
+# Problem 1
