@@ -93,3 +93,15 @@ instacart %>%
 
 _From the table we can indicate that the top three most popular items for "packaged vegetables fruits" are `Organic Baby Spinach`, `Organic Raspberries`, and `Organic Blueberries`.The top three most popular items for "baking ingredients" are `Light Brown Sugar`, `Pure Baking Soda`, and `Cane Sugar`. The top three most popular items for "dog food care" are `Snack Sticks Chicken & Rice Recipe Dog Treats	`, `Organix Chicken & Brown Rice Recipe`, and `Small Dog Biscuits`._
 
+Next we'll create a table showing the mean hour of orders in each weekday for "Pink Lady Apples" and "Coffee Ice Cream". We can first `filter` and `group by` product name and order dow and then `summarize` the mean order hour for each weekday. Since we want to create a 2*7 table, we can use `pivot_wider` to change the spread of data.
+
+```{r hour_table}
+instacart %>%
+  filter(product_name %in% c("Pink Lady Apples", "Coffee Ice Cream")) %>%
+  group_by(product_name, order_dow) %>%
+  summarize(mean_order_hour = mean(order_hour_of_day)) %>%
+  pivot_wider(names_from = "order_dow", values_from = "mean_order_hour") %>%
+  knitr::kable(digits = 2)
+```
+
+_This result table infers that Pink Lady Apples are generally purchased slightly earlier in the day than Coffee Ice Cream, with the exception of day 5._
