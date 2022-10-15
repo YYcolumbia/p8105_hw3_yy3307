@@ -44,7 +44,7 @@ instacart =
 
 _The `Instacart` dataset contains data of online grovery services which allow peopleto shop online from local stores. The dataset has `r nrow(instacart)` rows and `r ncol(instacart)` columns, which includes variables of `order_id, product_id, add_to_cart_order, reordered, user_id, eval_set, order_number, order_dow, order_hour_of_day, days_since_prior_order, product_name, aisle_id, department_id, aisle, department`. We can make some data analysis with this dataset, for instance, we can indicate which type of grocery is most popular by counting frequencies of `aisle` variable. Also, we can observe something like the `reorder rate`, the `reorder rate` of this dataset is `r colMeans(instacart[c("reordered")])`, which means that about 59.86% of all customers would like to reorder._
 
-We can use `count` and `distinct` functions to find the total number of aisles. And we also need to return the `name` of aisle which most repeated being ordered, `which.max` can help us find that aisle.
+We can use `count` and `distinct` functions to find the total number of aisles. And we also need to return the `name` of aisle which most repeated being ordered, `which.max` can help us find that aisle. The most occurrence aisle is easy to find, but we need to `filter` the aisle column to eliminate the most occurrence aisle first and again use `which.max` to find the second most occurrence aisle from the new list of aisles.
 
 ```{r aisles}
 num_aisle = count(distinct(instacart, aisle))
@@ -59,3 +59,21 @@ aisle_2most = names(which.max(table(except_fresh$aisle)))
 
 _There are **`r num_aisle`** distinct aisles, **`r aisle_most`** and **`r aisle_2most`** are the most items ordered from._
 
+To make a plot that we want, the first step is to manipulate our dataset with conditions. In this condition, we need to `count` how many items are ordered in each aisle and `filter` out how many of them has more than 10000 items ordered. We can call `fct_reorder` from `forcats` package to change the order level according to aisle name and number of orders. Then, we can plot out the number of items ordered in each aisle using `geom_point` with labels and themes being added. Lastly, we just need to save the output plot into a `results` directory using `ggsave`.
+
+```{r plot_aisle}
+reorder_aisle =
+  instacart %>% 
+  count(aisle) %>% 
+  filter(n > 10000) %>% 
+  mutate(aisle = fct_reorder(aisle, n))
+
+numorder_aisle =
+  ggplot(data = reorder_aisle, aes(x = aisle, y = n)) + 
+  geom_point() + 
+  labs(title = "Number of items ordered in each aisle") +
+  theme(axis.text.x = element_text(angle = 60, hjust = 1))
+
+ggsave("./results/problem_1/aisle_orders.pdf", numorder_aisle, width = 8, height = 5)
+numorder_aisle
+```
