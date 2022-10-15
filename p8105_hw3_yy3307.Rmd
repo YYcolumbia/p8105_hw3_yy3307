@@ -44,3 +44,18 @@ instacart =
 
 _The `Instacart` dataset contains data of online grovery services which allow peopleto shop online from local stores. The dataset has `r nrow(instacart)` rows and `r ncol(instacart)` columns, which includes variables of `order_id, product_id, add_to_cart_order, reordered, user_id, eval_set, order_number, order_dow, order_hour_of_day, days_since_prior_order, product_name, aisle_id, department_id, aisle, department`. We can make some data analysis with this dataset, for instance, we can indicate which type of grocery is most popular by counting frequencies of `aisle` variable. Also, we can observe something like the `reorder rate`, the `reorder rate` of this dataset is `r colMeans(instacart[c("reordered")])`, which means that about 59.86% of all customers would like to reorder._
 
+We can use `count` and `distinct` functions to find the total number of aisles. And we also need to return the `name` of aisle which most repeated being ordered, `which.max` can help us find that aisle.
+
+```{r aisles}
+num_aisle = count(distinct(instacart, aisle))
+
+aisle_most = names(which.max(table(instacart$aisle)))
+
+except_fresh =
+  instacart %>%
+  filter(!grepl('fresh vegetables', aisle))
+aisle_2most = names(which.max(table(except_fresh$aisle)))
+```
+
+_There are **`r num_aisle`** distinct aisles, **`r aisle_most`** and **`r aisle_2most`** are the most items ordered from._
+
