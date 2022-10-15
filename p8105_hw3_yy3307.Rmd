@@ -6,9 +6,41 @@ author: "Yang Yi"
 UNI: "yy3307"
 ---
 
-```{r setup, message = FALSE}
+```{r setup, include = FALSE}
 library(tidyverse)
-library(readxl)
+library(ggridges)
+library(patchwork)
+
+library(p8105.datasets)
+
+knitr::opts_chunk$set(
+	echo = TRUE,
+	warning = FALSE,
+	fig.width = 8, 
+  fig.height = 6,
+  out.width = "90%"
+)
+
+theme_set(theme_minimal() + theme(legend.position = "bottom"))
+
+options(
+  ggplot2.continuous.colour = "viridis",
+  ggplot2.continuous.fill = "viridis"
+)
+
+scale_colour_discrete = scale_colour_viridis_d
+scale_fill_discrete = scale_fill_viridis_d
 ```
 
 # Problem 1
+The first step we need to do is importing the `instacart` data from `p8105.datasets`.
+```{r import instacart}
+data("instacart")
+
+instacart = 
+  instacart %>% 
+  as_tibble(instacart)
+```
+
+_The `Instacart` dataset contains data of online grovery services which allow peopleto shop online from local stores. The dataset has `r nrow(instacart)` rows and `r ncol(instacart)` columns, which includes variables of `order_id, product_id, add_to_cart_order, reordered, user_id, eval_set, order_number, order_dow, order_hour_of_day, days_since_prior_order, product_name, aisle_id, department_id, aisle, department`. We can make some data analysis with this dataset, for instance, we can indicate which type of grocery is most popular by counting frequencies of `aisle` variable. Also, we can observe something like the `reorder rate`, the `reorder rate` of this dataset is `r colMeans(instacart[c("reordered")])`, which means that about 59.86% of all customers would like to reorder._
+
