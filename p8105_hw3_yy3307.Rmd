@@ -61,7 +61,7 @@ _There are **`r num_aisle`** distinct aisles, **`r aisle_most`** and **`r aisle_
 
 To make a plot that we want, the first step is to manipulate our dataset with conditions. In this condition, we need to `count` how many items are ordered in each aisle and `filter` out how many of them has more than 10000 items ordered. We can call `fct_reorder` from `forcats` package to change the order level according to aisle name and number of orders. Then, we can plot out the number of items ordered in each aisle using `geom_point` with labels and themes being added. Lastly, we just need to save the output plot into a `results` directory using `ggsave`.
 
-```{r plot_aisle}
+```{r plot aisle}
 reorder_aisle =
   instacart %>% 
   count(aisle) %>% 
@@ -80,7 +80,7 @@ numorder_aisle
 
 Then we are going to make a table showing the top three popular items in each of “baking ingredients”, “dog food care”, and “packaged vegetables fruits” aisles. The table will include corresponding aisle, product name, number of orders, and rank.
 
-```{r popular_table}
+```{r popular table}
 instacart %>% 
   filter(aisle %in% c("baking ingredients", "dog food care", "packaged vegetables fruits")) %>%
   group_by(aisle) %>% 
@@ -95,7 +95,7 @@ _From the table we can indicate that the top three most popular items for "packa
 
 Next we'll create a table showing the mean hour of orders in each weekday for "Pink Lady Apples" and "Coffee Ice Cream". We can first `filter` and `group by` product name and order dow and then `summarize` the mean order hour for each weekday. Since we want to create a 2*7 table, we can use `pivot_wider` to change the spread of data.
 
-```{r hour_table}
+```{r hour table}
 instacart %>%
   filter(product_name %in% c("Pink Lady Apples", "Coffee Ice Cream")) %>%
   group_by(product_name, order_dow) %>%
@@ -105,3 +105,33 @@ instacart %>%
 ```
 
 _This result table infers that Pink Lady Apples are generally purchased slightly earlier in the day than Coffee Ice Cream, with the exception of day 5._
+
+# Problem 2
+
+First we need to import, clean and wrangle the `accel_data` dataset. Since the original dataset has 1440 activities listed in wide forma, I would like to use `pivot_longer` to transform these activities with their values into a column format with name equals `activity` and value equals to `activity_count`. Then, we'll need a "weekday vs. weekend" column. We can `mutate` this column using the `case_when` function to determine which days should be considered as "weekday" and which days are "weekend". Since one-minute intervals are common for `activity_counts`, I'll change the class of this variable to `integers`.
+
+```{r import accel}
+accel_df =
+  read.csv(file = "./data/accel_data.csv") %>%
+  janitor::clean_names() %>%
+  pivot_longer(
+    activity_1:activity_1440,
+    names_to = "activity",
+    values_to = "activity_counts"
+  ) %>%
+  mutate(
+    weekday_vs_weekend = case_when(
+      day == "Monday"    ~ "weekday",
+      day == "Tuesday"   ~ "weekday",
+      day == "Wednesday" ~ "weekday",
+      day == "Thursday"  ~ "weekday",
+      day == "Friday"    ~ "weekday",
+      day == "Saturday"  ~ "weekend",
+      day == "Sunday"    ~ "weekend",
+      TRUE               ~ ""
+    )
+  ) %>%
+  mutate(activity_counts = as.integer(activity_counts))
+```
+
+_After manipulating the "accel" dataset, it contains `r nrow(accel_df)` rows and `r ncol(accel_df)` columns, which means that there are `r nrow(accel_df)` observations. We have `week, day_id, day, activity, activity_counts, weekday_vs_weekend` as variables, where `week, day_id, activity_counts` are integer variables and `day, activity, weekday_vs_weekend` in character variables._
