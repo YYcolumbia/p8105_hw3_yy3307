@@ -77,3 +77,19 @@ numorder_aisle =
 ggsave("./results/problem_1/aisle_orders.pdf", numorder_aisle, width = 8, height = 5)
 numorder_aisle
 ```
+
+Then we are going to make a table showing the top three popular items in each of “baking ingredients”, “dog food care”, and “packaged vegetables fruits” aisles. The table will include corresponding aisle, product name, number of orders, and rank.
+
+```{r popular_table}
+instacart %>% 
+  filter(aisle %in% c("baking ingredients", "dog food care", "packaged vegetables fruits")) %>%
+  group_by(aisle) %>% 
+  count(product_name) %>% 
+  mutate(rank = min_rank(desc(n))) %>% 
+  filter(rank < 4) %>% 
+  arrange(desc(n)) %>%
+  knitr::kable()
+```
+
+_From the table we can indicate that the top three most popular items for "packaged vegetables fruits" are `Organic Baby Spinach`, `Organic Raspberries`, and `Organic Blueberries`.The top three most popular items for "baking ingredients" are `Light Brown Sugar`, `Pure Baking Soda`, and `Cane Sugar`. The top three most popular items for "dog food care" are `Snack Sticks Chicken & Rice Recipe Dog Treats	`, `Organix Chicken & Brown Rice Recipe`, and `Small Dog Biscuits`._
+
