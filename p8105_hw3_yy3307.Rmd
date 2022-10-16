@@ -95,7 +95,7 @@ _From the table we can indicate that the top three most popular items for "packa
 
 Next we'll create a table showing the mean hour of orders in each weekday for "Pink Lady Apples" and "Coffee Ice Cream". We can first `filter` and `group by` product name and order dow and then `summarize` the mean order hour for each weekday. Since we want to create a 2*7 table, we can use `pivot_wider` to change the spread of data.
 
-```{r hour table}
+```{r hour table, message = FALSE}
 instacart %>%
   filter(product_name %in% c("Pink Lady Apples", "Coffee Ice Cream")) %>%
   group_by(product_name, order_dow) %>%
@@ -108,7 +108,7 @@ _This result table infers that Pink Lady Apples are generally purchased slightly
 
 # Problem 2
 
-First we need to import, clean and wrangle the `accel_data` dataset. Since the original dataset has 1440 activities listed in wide forma, I would like to use `pivot_longer` to transform these activities with their values into a column format with name equals `activity` and value equals to `activity_count`. Then, we'll need a "weekday vs. weekend" column. We can `mutate` this column using the `case_when` function to determine which days should be considered as "weekday" and which days are "weekend". Since one-minute intervals are common for `activity_counts`, I'll change the class of this variable to `integers`.
+First we need to import, clean and wrangle the `accel_data` dataset. Since the original dataset has 1440 activities listed in wide forma, I would like to use `pivot_longer` to transform these activities with their values into a column format with name equals `activity` and value equals to `activity_count`. Then, we'll need a "weekday vs. weekend" column. We can `mutate` this column using the `case_when` function to determine which days should be considered as "weekday" and which days are "weekend". Since one-minute intervals are common for `activity_minutes`, I'll delete the "activity" prefix and change the class of this variable to `integers`.
 
 ```{r import accel}
 accel_df =
@@ -116,8 +116,9 @@ accel_df =
   janitor::clean_names() %>%
   pivot_longer(
     activity_1:activity_1440,
-    names_to = "activity",
-    values_to = "activity_counts"
+    names_to = "activity_minutes",
+    values_to = "activity_counts",
+    names_prefix = "activity_"
   ) %>%
   mutate(
     weekday_vs_weekend = case_when(
@@ -131,7 +132,19 @@ accel_df =
       TRUE               ~ ""
     )
   ) %>%
-  mutate(activity_counts = as.integer(activity_counts))
+  mutate(activity_minutes = as.integer(activity_minutes))
 ```
 
-_After manipulating the "accel" dataset, it contains `r nrow(accel_df)` rows and `r ncol(accel_df)` columns, which means that there are `r nrow(accel_df)` observations. We have `week, day_id, day, activity, activity_counts, weekday_vs_weekend` as variables, where `week, day_id, activity_counts` are integer variables and `day, activity, weekday_vs_weekend` in character variables._
+_After manipulating the "accel" dataset, it contains `r nrow(accel_df)` rows and `r ncol(accel_df)` columns, which means that there are `r nrow(accel_df)` observations. We have `week, day_id, day, activity_minutes, activity_counts, weekday_vs_weekend` as variables, where `week, day_id, activity_minutes, activity_counts` are numerical variables and `day, activity, weekday_vs_weekend` in character variables._
+
+Then we want to focus on analyzing total activity over each day. First we need to group our data by variables according to each day, then we need to create a `total_activity` variable to sum up minutes of all activities. With these information, we can generate a table showing totals for each day.s
+
+```{r each day total, message = FALSE}
+accel_df %>%
+  group_by(week, day_id, day) %>%
+  summarize(total_activity = sum(activity_counts)) %>%
+  knitr::kable()
+```
+
+_In general, the trends of total activity over the day are not apparent, because total activity fluctuates irregularly between days. But we can find some extreme small values on 24th and 31st day, both of them are Saturday._
+
