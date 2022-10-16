@@ -167,3 +167,17 @@ activity_hour_plot
 ```
 
 _We find that for most days in a week, most of the activity counts show a clear upward trend from 6:00 a.m. to 12:00 p.m., among them, activity counts on Thursday and Sunday peaked during this time period. From 12:30 pm to 18:45 pm, activity counts fluctuate in a moderate range for most days, and activity counts on Saturdays and Sundays reach higher increases around 16:40 pm. For Wednesday, Friday, and Saturday, 20:50p.m. is when activity counts fluctuate the most. We can conclude that for most days in a week, activity counts It is basically at a stable minimum value in the early morning, which may be caused by deep sleep. And it will reach its peak twice at noon and at night._
+
+# Problem 3
+
+Import ny_noaa dataset:
+
+```{r import ny_noaa}
+data("ny_noaa")
+
+ny_noaa =
+  ny_noaa %>%
+  as_tibble(ny_noaa) %>%
+  janitor::clean_names()
+```
+
