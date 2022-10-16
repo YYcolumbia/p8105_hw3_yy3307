@@ -148,3 +148,22 @@ accel_df %>%
 
 _In general, the trends of total activity over the day are not apparent, because total activity fluctuates irregularly between days. But we can find some extreme small values on 24th and 31st day, both of them are Saturday._
 
+Lastly we are going to create a single-panel plot showing the correlation between `activity minutes` after midnight and `activity counts` and use color to indicate day of the week.
+
+```{r accel plot}
+activity_hour_plot =
+  accel_df %>%
+    ggplot(aes(x = activity_minutes, y = activity_counts, color = day)) +
+    geom_point() +
+    labs(
+      title = "24-Hour Activity Time Courses For Each Day",
+      x = "Time After Midnight (Min)",
+      y = "Activity Counts",
+      caption = "Data from accel_data"
+    )
+
+ggsave("./results/problem_2/activity_hour.pdf", activity_hour_plot, width = 8, height = 5)
+activity_hour_plot
+```
+
+_We find that for most days in a week, most of the activity counts show a clear upward trend from 6:00 a.m. to 12:00 p.m., among them, activity counts on Thursday and Sunday peaked during this time period. From 12:30 pm to 18:45 pm, activity counts fluctuate in a moderate range for most days, and activity counts on Saturdays and Sundays reach higher increases around 16:40 pm. For Wednesday, Friday, and Saturday, 20:50p.m. is when activity counts fluctuate the most. We can conclude that for most days in a week, activity counts It is basically at a stable minimum value in the early morning, which may be caused by deep sleep. And it will reach its peak twice at noon and at night._
