@@ -6,7 +6,7 @@ author: "Yang Yi"
 UNI: "yy3307"
 ---
 
-```{r setup, include = FALSE}
+```{r setup, message = FALSE}
 library(tidyverse)
 library(ggridges)
 library(patchwork)
@@ -72,7 +72,8 @@ numorder_aisle =
   ggplot(data = reorder_aisle, aes(x = aisle, y = n)) + 
   geom_point() + 
   labs(title = "Number of items ordered in each aisle") +
-  theme(axis.text.x = element_text(angle = 60, hjust = 1))
+  theme(axis.text.x = element_text(angle = 60, hjust = 1)) +
+  theme(plot.title = element_text(hjust = 0.5))
 
 ggsave("./results/problem_1/aisle_orders.pdf", numorder_aisle, width = 8, height = 5)
 numorder_aisle
@@ -160,7 +161,8 @@ activity_hour_plot =
       x = "Time After Midnight (Min)",
       y = "Activity Counts",
       caption = "Data from accel_data"
-    )
+    ) +
+    theme(plot.title = element_text(hjust = 0.5))
 
 ggsave("./results/problem_2/activity_hour.pdf", activity_hour_plot, width = 8, height = 5)
 activity_hour_plot
@@ -200,3 +202,32 @@ snow_most_count = as.integer(length(which(noaa_df$snow == 0)))
 ```
 
 _We can tell that the most commonly observed value for snowfall is "r snowfall_obs", which occurs `r snow_most_count` times. This is because `ny_noaa` records the weather conditions for days in almost every month, snow usually occurs in winter and most of the time there is no snow, so the snowfall for these times will be 0 mm._
+
+I'm going to make a two-panel plot showing the average max temperature in January and in July in each station across years.
+
+```{r plot max temp, message = FALSE}
+noaa_df %>%
+  group_by(id, year,month) %>% 
+  filter(month == "01" | month == "07") %>% 
+  summarize(
+    mean_tmax = mean(tmax,na.rm = TRUE)
+  ) %>% 
+  mutate(
+    month = recode(month, "01" = "January", "07" = "July"),
+    year = as.numeric(year)
+  ) %>%
+  ggplot(aes(x = year,y = mean_tmax,color = month)) +
+  geom_point() +
+  geom_smooth() +
+  labs(
+    title = "Average Max Temperature in January vs July from 1981 to 2010",
+    x = "Year",
+    y = "Average Max Temperature (tenths of degrees C)",
+    caption = "Data from NY NOAA"
+  ) +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  facet_grid(~month) 
+```
+
+_Average maximum temperature in January from 1981 to 2010 fluctuates up and down roughly around 0 degree C on a five-year cycle, while average maximum temperature in July from 1981 to 2010 overall stable at 27 degrees C. There exist some outliers average maximum temperature for both January and July, for instance, the lowest temperature of January 2005 is about -12 degree C which is far away from rests data in the same month._
+
